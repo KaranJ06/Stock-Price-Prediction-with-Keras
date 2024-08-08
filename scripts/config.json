@@ -1,0 +1,15 @@
+{
+  "epochs_optimizer": 10,
+  "epochs": 150,
+  "batch_size": 32,
+  "learning_rate": 0.001,
+  "dropout_rate": 0.2,
+  "seq_length": 7,
+  "init_points": 5,
+  "n_iter": 5,
+  "tikets": ["^GSPC", "AAPL", "GOOG", "MSFT", "NVDA", "META", "AMZN", "TSLA", "NFLX", "BABA", "V", "AMZN"],
+  "validation_split": 0.05,
+  "train_split": 0.995,
+  "days_to_predict": 5
+}
+

@@ -12,6 +12,7 @@ from bayes_opt import BayesianOptimization
 import json
 from datetime import datetime, timedelta
 import os
+from typing import List
 
 # Function to get stock data (from CSV if exists, otherwise from yfinance)
 def get_stock_data(ticker, csv_filename):
@@ -136,7 +137,7 @@ def train_and_predict(tickers, continue_training=False):
     stock_data_dict = {}
 
     for ticker in tickers:
-        csv_filename = f"Data/{ticker}_stock_data.csv"
+        csv_filename = f"Data_csv/{ticker}_stock_data.csv"
         data = get_stock_data(ticker, csv_filename)
         stock_data = prepare_stock_data(data)
         stock_data_dict[ticker] = stock_data
@@ -167,7 +168,7 @@ def train_and_predict(tickers, continue_training=False):
         model = create_model((7, 5), best_params['learning_rate'], best_params['dropout_rate'])
         print("Created new model")
 
-    model.fit(X_train, y_train, epochs=150, batch_size=int(best_params['batch_size']), validation_split=0.2,
+    model.fit(X_train, y_train, epochs=2, batch_size=int(best_params['batch_size']), validation_split=0.2,
               callbacks=[EarlyStopping(patience=10), ReduceLROnPlateau(patience=5)])
 
     model.save('stock_model.keras')
@@ -184,7 +185,7 @@ def train_and_predict(tickers, continue_training=False):
             next_month_predictions.append(next_day_scaled[0, 0])
 
             # Update the last sequence
-            last_sequence = np.roll(last_sequence, -1, axis=0)
+            last_sequence = np.roll(last_sequence, -2, axis=0)
             last_sequence[-1, 3] = next_day_scaled
 
         # Convert predictions to actual prices
@@ -207,7 +208,7 @@ def train_and_predict(tickers, continue_training=False):
         # Annotate the first and last predicted prices
         plt.annotate(f'${next_month_prices[0]:.2f}', (1, next_month_prices[0]), textcoords="offset points",
                      xytext=(0, 10), ha='center')
-        plt.annotate(f'${next_month_prices[-1]::.2f}', (30, next_month_prices[-1]), textcoords="offset points",
+        plt.annotate(f'${next_month_prices[-1]:.2f}', (30, next_month_prices[-1]), textcoords="offset points",
                      xytext=(0, -15), ha='center')
 
         # Add overall trend
